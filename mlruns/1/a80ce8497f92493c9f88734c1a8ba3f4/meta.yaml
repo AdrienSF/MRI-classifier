@@ -1,0 +1,15 @@
+artifact_uri: file:///home/schurgerfoy%40chapman.edu/MRI-classifier/mlruns/1/a80ce8497f92493c9f88734c1a8ba3f4/artifacts
+end_time: 1616002001843
+entry_point_name: ''
+experiment_id: '1'
+lifecycle_stage: active
+name: ''
+run_id: a80ce8497f92493c9f88734c1a8ba3f4
+run_uuid: a80ce8497f92493c9f88734c1a8ba3f4
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1616001946687
+status: 3
+tags: []
+user_id: schurgerfoy@chapman.edu
