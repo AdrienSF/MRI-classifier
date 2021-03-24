@@ -131,3 +131,9 @@ dmypy.json
 # SLURM output
 job.*.err
 job.*.out
+
+# vscode
+.vscode
+
+# view notebook
+view.ipynb
