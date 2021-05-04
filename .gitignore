@@ -137,3 +137,6 @@ job.*.out
 
 # view notebook
 view.ipynb
+
+# venv
+*env

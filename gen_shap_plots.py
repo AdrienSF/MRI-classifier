@@ -2,6 +2,7 @@ import shap
 import mlflow
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 from sklearn.utils import resample
 from sklearn.ensemble import RandomForestClassifier
 
