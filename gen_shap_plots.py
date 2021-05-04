@@ -5,8 +5,11 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.utils import resample
-from sklearn.ensemble import RandomForestClassifier
-
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier, AdaBoostClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+from sklearn.neural_network import MLPClassifier
+from sklearn.svm import SVC
 
 
 def resample_balanced(volume_filename: str):
@@ -89,6 +92,11 @@ def save_shap_plots(clf, data, labels, plot_labels):
     # explain all the predictions in the test set
     kexplainer = shap.KernelExplainer(clf.predict_proba, data)
     shap_values = kexplainer.shap_values(data)
+    
+    # do the same as above but logged to mlflow
+    mlflow.shap.log_explanation(clf.predict, data)
+
+
     # save plot of overall salience
     plt.title(clf_name + ' All classes')
     shap.summary_plot(shap_values, data, show=False, class_names=['AD', 'CN', 'MCI', 'SPR'])
@@ -112,6 +120,7 @@ def save_shap_plots(clf, data, labels, plot_labels):
 
 
 
+
 # test it out
 data,  data_and_labels = resample_balanced('Volume_df.csv')
 # print(data_and_labels.iloc[[1, 76, 2*76, 3*76]])
@@ -119,5 +128,19 @@ data,  data_and_labels = resample_balanced('Volume_df.csv')
 # smaller sample
 sample_indeces = [i for i in range(5)] + [76+i for i in range(5)] + [2*76+i for i in range(5)] + [3*76+i for i in range(5)]
 
-rforest = RandomForestClassifier(n_estimators=100, max_depth=None, min_samples_split=2, random_state=0)
-save_shap_plots(rforest, data.iloc[sample_indeces], data_and_labels.iloc[sample_indeces]['Target_cat'], data_and_labels.iloc[sample_indeces]['Target'])
+
+classifiers = [
+    RandomForestClassifier(n_estimators=100, max_depth=None, min_samples_split=2, random_state=0),
+    KNeighborsClassifier(),
+    SVC(kernel='linear'),
+    SVC(kernel='sigmoid'),
+    SVC(kernel='rbf'),
+    GradientBoostingClassifier(),
+    AdaBoostClassifier(),
+    LinearDiscriminantAnalysis(),
+    MLPClassifier(solver='lbfgs', alpha=1e-1, hidden_layer_sizes=(5, 2), random_state=0)
+]
+
+mlflow.sklearn.autolog()
+for clf in classifiers:
+    save_shap_plots(clf, data.iloc[sample_indeces], data_and_labels.iloc[sample_indeces]['Target_cat'], data_and_labels.iloc[sample_indeces]['Target'])

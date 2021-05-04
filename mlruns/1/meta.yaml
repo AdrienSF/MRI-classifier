@@ -1,4 +1,0 @@
-artifact_location: file:///home/schurgerfoy%40chapman.edu/MRI-classifier/mlruns/1
-experiment_id: '1'
-lifecycle_stage: active
-name: compare 100-fold test acc using all features vs reduced features
