@@ -126,7 +126,7 @@ data,  data_and_labels = resample_balanced('Volume_df.csv')
 # print(data_and_labels.iloc[[1, 76, 2*76, 3*76]])
 # exit(0)
 # smaller sample
-sample_indeces = [i for i in range(5)] + [76+i for i in range(5)] + [2*76+i for i in range(5)] + [3*76+i for i in range(5)]
+# sample_indeces = [i for i in range(5)] + [76+i for i in range(5)] + [2*76+i for i in range(5)] + [3*76+i for i in range(5)]
 
 
 classifiers = [
@@ -143,4 +143,4 @@ classifiers = [
 
 mlflow.sklearn.autolog()
 for clf in classifiers:
-    save_shap_plots(clf, data.iloc[sample_indeces], data_and_labels.iloc[sample_indeces]['Target_cat'], data_and_labels.iloc[sample_indeces]['Target'])
+    save_shap_plots(clf, data, data_and_labels['Target_cat'], data_and_labels['Target'])
