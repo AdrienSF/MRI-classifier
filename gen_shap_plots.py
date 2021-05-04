@@ -1,3 +1,4 @@
+import pathlib
 import shap
 import mlflow
 import numpy as np
@@ -16,10 +17,10 @@ def resample_balanced(volume_filename: str):
     # remove voxel data (volume is a more universal measure)
     volume_df = volume_df.drop(volume_df.columns[71:], axis='columns')
     # remove subject id
-    volume_df = volume_df.drop(volume_df.columns[0], axis='columns')
+    volumes = volume_df.drop(volume_df.columns[0], axis='columns')
 
     # add other label format
-    volumes["Target"] = volume_df["Target"].astype('category')
+    volumes["Target"] = volumes["Target"].astype('category')
     volumes['Target_cat'] = volumes['Target'].cat.codes 
 
 
@@ -76,16 +77,47 @@ def resample_balanced(volume_filename: str):
 
 
 def save_shap_plots(clf, data, labels, plot_labels):
-    clf_name = type(clf)
+    classmap = {0: 'AD', 1: 'CN', 2: 'MCI', 3:'SPR'}
+    clf_name = str(clf)
+    # make sure directories exist
+    pathlib.Path(clf_name+'_plots').mkdir(parents=True, exist_ok=True)
+    start_path = clf_name+'_plots/'+clf_name
+
     # train on all data, we are not interested in test accuracy but rather which features the classifier finds important.
     # Thus we should train it on as much data as we can in order to more accurately meaure feature salience 
-    rforest.fit(X_train, y_train)
+    clf.fit(data, labels)
     # explain all the predictions in the test set
-    rfexplainer = shap.KernelExplainer(rforest.predict_proba, X_train)
-    rfshap_values = rfexplainer.shap_values(X_test)
+    kexplainer = shap.KernelExplainer(clf.predict_proba, data)
+    shap_values = kexplainer.shap_values(data)
     # save plot of overall salience
-    shap.summary_plot(rfshap_values, X_test, class_names=df_downsampled['Target'], show=False)
-    plt.savefig(clf_name+'mean(|SHAP_val|)')
-    # save plot of impact on output 
-    shap.summary_plot(rfshap_values[0], X_test, class_names=df_downsampled['Target'])
-    plt.savefig(clf_name+'SHAP_val')
+    plt.title(clf_name + ' All classes')
+    shap.summary_plot(shap_values, data, show=False, class_names=['AD', 'CN', 'MCI', 'SPR'])
+    plt.savefig(start_path+'mean(|SHAP_val|)', bbox_inches='tight')
+    plt.close()
+    # save plots of impact on output for each class
+    for i in range(4):
+        plt.title(clf_name + ' class: ' + classmap[i])
+        shap.summary_plot(shap_values[i], data, class_names=plot_labels, show=False)
+        plt.savefig(start_path+'SHAP_val_class_'+classmap[i], bbox_inches='tight')
+        plt.close()
+        plt.title(clf_name + ' class: ' + classmap[i])
+        shap.summary_plot(shap_values[i], data, class_names=plot_labels, show=False, plot_type='bar')
+        plt.savefig(start_path+'mean(|SHAP_val|)'+classmap[i], bbox_inches='tight')
+        plt.close()
+
+
+
+
+
+
+
+
+# test it out
+data,  data_and_labels = resample_balanced('Volume_df.csv')
+# print(data_and_labels.iloc[[1, 76, 2*76, 3*76]])
+# exit(0)
+# smaller sample
+sample_indeces = [i for i in range(5)] + [76+i for i in range(5)] + [2*76+i for i in range(5)] + [3*76+i for i in range(5)]
+
+rforest = RandomForestClassifier(n_estimators=100, max_depth=None, min_samples_split=2, random_state=0)
+save_shap_plots(rforest, data.iloc[sample_indeces], data_and_labels.iloc[sample_indeces]['Target_cat'], data_and_labels.iloc[sample_indeces]['Target'])
