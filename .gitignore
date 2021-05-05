@@ -140,3 +140,6 @@ view.ipynb
 
 # venv
 *env
+
+#mlruns (I suspect it's too heavy for git)
+mlruns
