@@ -130,11 +130,11 @@ data,  data_and_labels = resample_balanced('Volume_df.csv')
 
 
 classifiers = [
-    RandomForestClassifier(n_estimators=100, max_depth=None, min_samples_split=2, random_state=0),
-    KNeighborsClassifier(),
-    SVC(kernel='linear'),
-    SVC(kernel='sigmoid'),
-    SVC(kernel='rbf'),
+    # RandomForestClassifier(n_estimators=100, max_depth=None, min_samples_split=2, random_state=0),
+    # KNeighborsClassifier(),
+    SVC(kernel='linear', probability=True),
+    SVC(kernel='sigmoid', probability=True),
+    SVC(kernel='rbf', probability=True),
     GradientBoostingClassifier(),
     AdaBoostClassifier(),
     LinearDiscriminantAnalysis(),
@@ -143,4 +143,7 @@ classifiers = [
 
 mlflow.sklearn.autolog()
 for clf in classifiers:
-    save_shap_plots(clf, data, data_and_labels['Target_cat'], data_and_labels['Target'])
+    try:
+        save_shap_plots(clf, data, data_and_labels['Target_cat'], data_and_labels['Target'])
+    except:
+        continue
