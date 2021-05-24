@@ -13,14 +13,14 @@ from sklearn.svm import SVC
 
 
 def resample_balanced(volume_filename: str):
-    loaded_df = pd.read_csv(volume_filename)
-    volume_df = loaded_df
-    # remove subject 53 an 369 (who have mostly NaN values)
-    volume_df = volume_df.drop([53, 369])
-    # remove voxel data (volume is a more universal measure)
-    volume_df = volume_df.drop(volume_df.columns[71:], axis='columns')
-    # remove subject id
-    volumes = volume_df.drop(volume_df.columns[0], axis='columns')
+    volumes = pd.read_csv(volume_filename)
+
+    # # remove subject 53 an 369 (who have mostly NaN values)
+    # volume_df = volume_df.drop([53, 369])
+    # # remove voxel data (volume is a more universal measure)
+    # volume_df = volume_df.drop(volume_df.columns[71:], axis='columns')
+    # # remove subject id
+    # volumes = volume_df.drop(volume_df.columns[0], axis='columns')
 
     # add other label format
     volumes["Target"] = volumes["Target"].astype('category')
@@ -79,9 +79,9 @@ def resample_balanced(volume_filename: str):
 
 
 
-def save_shap_plots(clf, data, labels, plot_labels):
+def save_shap_plots(clf, data, labels, plot_labels, clf_name):
     classmap = {0: 'AD', 1: 'CN', 2: 'MCI', 3:'SPR'}
-    clf_name = str(clf)
+    clf_name = clf_name
     # make sure directories exist
     pathlib.Path(clf_name+'_plots').mkdir(parents=True, exist_ok=True)
     start_path = clf_name+'_plots/'+clf_name
@@ -122,28 +122,34 @@ def save_shap_plots(clf, data, labels, plot_labels):
 
 
 # test it out
-data,  data_and_labels = resample_balanced('Volume_df.csv')
-# print(data_and_labels.iloc[[1, 76, 2*76, 3*76]])
-# exit(0)
-# smaller sample
-# sample_indeces = [i for i in range(5)] + [76+i for i in range(5)] + [2*76+i for i in range(5)] + [3*76+i for i in range(5)]
+# data,  data_and_labels = resample_balanced('Volume_df.csv')
+# # print(data_and_labels.iloc[[1, 76, 2*76, 3*76]])
+# # exit(0)
+# # smaller sample
+# # sample_indeces = [i for i in range(5)] + [76+i for i in range(5)] + [2*76+i for i in range(5)] + [3*76+i for i in range(5)]
 
 
-classifiers = [
-    # RandomForestClassifier(n_estimators=100, max_depth=None, min_samples_split=2, random_state=0),
-    # KNeighborsClassifier(),
+# classifiers = [
+#     # RandomForestClassifier(n_estimators=100, max_depth=None, min_samples_split=2, random_state=0),
+#     # KNeighborsClassifier(),
 #    SVC(kernel='linear', probability=True),
-#    SVC(kernel='sigmoid', probability=True),
-#    SVC(kernel='rbf', probability=True),
-#    GradientBoostingClassifier(),
-#    AdaBoostClassifier(),
-    LinearDiscriminantAnalysis(),
-    MLPClassifier(solver='lbfgs', alpha=1e-1, hidden_layer_sizes=(5, 2), random_state=0)
-]
+# #    SVC(kernel='sigmoid', probability=True),
+# #    SVC(kernel='rbf', probability=True),
+# #    GradientBoostingClassifier(),
+# #    AdaBoostClassifier(),
+#     # LinearDiscriminantAnalysis(),
+#     # MLPClassifier(solver='lbfgs', alpha=1e-1, hidden_layer_sizes=(5, 2), random_state=0)
+# ]
 
-mlflow.sklearn.autolog()
-for clf in classifiers:
- #   try:
-    save_shap_plots(clf, data, data_and_labels['Target_cat'], data_and_labels['Target'])
+# mlflow.sklearn.autolog()
+# for clf in classifiers:
+#  #   try:
+#     save_shap_plots(clf, data, data_and_labels['Target_cat'], data_and_labels['Target'], str(clf))
   #  except:
    #     continue
+
+
+
+data, data_and_labels = resample_balanced('scaled_volumes.csv')
+clf = SVC(kernel='linear', probability=True)
+save_shap_plots(clf, data, data_and_labels['Target_cat'], data_and_labels['Target'], 'linear SVM scaled input')
