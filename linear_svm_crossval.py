@@ -84,13 +84,13 @@ def run_svm(X_train, y_train, X_val, y_val):
 limited, full = resample_balanced('volumes.csv')
 
 loocv = ParallelKFold()
-acc = loocv.k_fold(int(limited.shape[0]/2), run_svm, limited.to_numpy(), full['Target_cat'].to_numpy())
-print("linear svm leave one out cross-validation accuracy (balanced unscaled dataset):", acc)
+acc = loocv.k_fold(100, run_svm, limited.to_numpy(), full['Target_cat'].to_numpy())
+print("linear svm 100-fold cross-validation accuracy (balanced unscaled dataset):", acc)
 
 
 
 limited, full = resample_balanced('scaled_volumes.csv')
 
 loocv = ParallelKFold()
-acc = loocv.k_fold(int(limited.shape[0]/2), run_svm, limited.to_numpy(), full['Target_cat'].to_numpy())
-print("linear svm leave one out cross-validation accuracy (balanced unscaled dataset):", acc)
+acc = loocv.k_fold(100, run_svm, limited.to_numpy(), full['Target_cat'].to_numpy())
+print("linear svm 100-fold cross-validation accuracy (balanced unscaled dataset):", acc)
