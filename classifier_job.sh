@@ -1,6 +1,5 @@
 #!/bin/bash
 
-#SBATCH --nodes=1
 #SBATCH --time=0-10:00:00
 #SBATCH --job-name=shaplot
 #SBATCH --error=job.%J.err
