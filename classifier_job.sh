@@ -1,5 +1,8 @@
 #!/bin/bash
 
+
+#SBATCH --mem=256000
+#SBATCH --nodes=6
 #SBATCH --time=0-10:00:00
 #SBATCH --job-name=shaplot
 #SBATCH --error=job.%J.err
