@@ -13,6 +13,12 @@ from sklearn.svm import SVC
 from parallel_kfold import ParallelKFold
 
 
+def log(message: str):
+    message = str(message)
+    with open('progress.log', 'a') as f:
+        f.write(message+'\n')
+
+
 def resample_balanced(volume_filename: str):
     volumes = pd.read_csv(volume_filename)
 
@@ -80,16 +86,25 @@ def run_svm(X_train, y_train, X_val, y_val):
 
 
 
-limited, full = resample_balanced('volumes.csv')
+# limited, full = resample_balanced('volumes.csv')
+volumes = pd.read_csv('volumes.csv')
+# add other label format
+volumes["Target"] = volumes["Target"].astype('category')
+volumes['Target_cat'] = volumes['Target'].cat.codes 
+
+full = volumes
+limited = volumes
+limited = limited.drop(columns=['Target', 'Target_cat'])
+
 
 loocv = ParallelKFold()
-acc = loocv.k_fold(limited.shape[0], run_svm, limited.to_numpy(), full['Target_cat'].to_numpy())
-print("linear svm leave-one-out cross-validation accuracy (balanced unscaled dataset):", acc)
+acc = loocv.k_fold(100, run_svm, limited.to_numpy(), full['Target_cat'].to_numpy())
+log("linear svm leave-one-out cross-validation accuracy (full unscaled dataset): "+ str(acc))
 
 
 
-limited, full = resample_balanced('scaled_volumes.csv')
+# limited, full = resample_balanced('scaled_volumes.csv')
 
-loocv = ParallelKFold()
-acc = loocv.k_fold(limited.shape[0], run_svm, limited.to_numpy(), full['Target_cat'].to_numpy())
-print("linear svm leave-one-out cross-validation accuracy (balanced scaled dataset):", acc)
+# loocv = ParallelKFold()
+# acc = loocv.k_fold(100, run_svm, limited.to_numpy(), full['Target_cat'].to_numpy())
+# print("linear svm leave-one-out cross-validation accuracy (balanced scaled dataset):", acc)
