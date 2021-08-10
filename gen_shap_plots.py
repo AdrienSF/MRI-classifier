@@ -118,38 +118,31 @@ def save_shap_plots(clf, data, labels, plot_labels, clf_name):
 
 
 
+data, data_and_labels = resample_balanced('scaled_volumes.csv')
 
 
-
-# test it out
-# data,  data_and_labels = resample_balanced('Volume_df.csv')
-# # print(data_and_labels.iloc[[1, 76, 2*76, 3*76]])
-# # exit(0)
-# # smaller sample
-# # sample_indeces = [i for i in range(5)] + [76+i for i in range(5)] + [2*76+i for i in range(5)] + [3*76+i for i in range(5)]
-
-
-# classifiers = [
-#     # RandomForestClassifier(n_estimators=100, max_depth=None, min_samples_split=2, random_state=0),
-#     # KNeighborsClassifier(),
-#    SVC(kernel='linear', probability=True),
-# #    SVC(kernel='sigmoid', probability=True),
-# #    SVC(kernel='rbf', probability=True),
-# #    GradientBoostingClassifier(),
-# #    AdaBoostClassifier(),
-#     # LinearDiscriminantAnalysis(),
-#     # MLPClassifier(solver='lbfgs', alpha=1e-1, hidden_layer_sizes=(5, 2), random_state=0)
-# ]
+classifiers = [
+    RandomForestClassifier(n_estimators=100, max_depth=None, min_samples_split=2, random_state=0),
+    KNeighborsClassifier(),
+    SVC(kernel='linear', probability=True),
+    SVC(kernel='sigmoid', probability=True),
+    SVC(kernel='rbf', probability=True),
+    GradientBoostingClassifier(),
+    AdaBoostClassifier(),
+    LinearDiscriminantAnalysis(),
+    MLPClassifier(solver='lbfgs', alpha=1e-1, hidden_layer_sizes=(5, 2), random_state=0)
+]
 
 # mlflow.sklearn.autolog()
-# for clf in classifiers:
-#  #   try:
-#     save_shap_plots(clf, data, data_and_labels['Target_cat'], data_and_labels['Target'], str(clf))
-  #  except:
-   #     continue
+for clf in classifiers:
+    print(str(clf))
+    try:
+       save_shap_plots(clf, data, data_and_labels['Target_cat'], data_and_labels['Target'], str(clf))
+    except Exception as e:
+        print(e)
+        continue
 
 
 
-data, data_and_labels = resample_balanced('scaled_volumes.csv')
-clf = SVC(kernel='linear', probability=True)
-save_shap_plots(clf, data, data_and_labels['Target_cat'], data_and_labels['Target'], 'linear SVM scaled input')
+# clf = SVC(kernel='linear', probability=True)
+# save_shap_plots(clf, data, data_and_labels['Target_cat'], data_and_labels['Target'], 'linear SVM scaled input')
