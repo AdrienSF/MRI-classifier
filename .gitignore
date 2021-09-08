@@ -143,3 +143,6 @@ view.ipynb
 
 #mlruns (I suspect it's too heavy for git)
 mlruns
+
+#data
+cn_mini
