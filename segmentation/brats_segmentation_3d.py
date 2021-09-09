@@ -98,8 +98,8 @@ train_transform = Compose(
     [
         # load 4 Nifti images and stack them together
         LoadImaged(keys=["image", "label"]),
-        EnsureChannelFirstd(keys="image"),
-        ConvertToMultiChannelBasedOnBratsClassesd(keys="label"),
+        EnsureChannelFirstd(keys=["image", "label"]),
+        # ConvertToMultiChannelBasedOnBratsClassesd(keys="label"),
         Spacingd(
             keys=["image", "label"],
             pixdim=(1.0, 1.0, 1.0),
@@ -119,8 +119,8 @@ train_transform = Compose(
 val_transform = Compose(
     [
         LoadImaged(keys=["image", "label"]),
-        EnsureChannelFirstd(keys="image"),
-        ConvertToMultiChannelBasedOnBratsClassesd(keys="label"),
+        EnsureChannelFirstd(keys=["image", "label"]),
+        # ConvertToMultiChannelBasedOnBratsClassesd(keys="label"),
         Spacingd(
             keys=["image", "label"],
             pixdim=(1.0, 1.0, 1.0),
@@ -157,9 +157,9 @@ val_ds = DecathlonDataset(
 )
 val_loader = DataLoader(val_ds, batch_size=1, shuffle=False, num_workers=4)
 
-# for bruh in val_loader:
-#     print(bruh['image'].shape)
-#     break
+# for bruh in train_loader:
+#     print(bruh['label'].shape)
+    # break
 # exit(0)
 
 max_epochs = 300
@@ -172,7 +172,7 @@ model = SegResNet(
     blocks_up=[1, 1, 1],
     init_filters=16,
     in_channels=1,
-    out_channels=3,
+    out_channels=1,
     dropout_prob=0.2,
 ).to(device)
 # print(model)
@@ -258,10 +258,10 @@ for epoch in range(max_epochs):
             metric_batch = dice_metric_batch.aggregate()
             metric_tc = metric_batch[0].item()
             metric_values_tc.append(metric_tc)
-            metric_wt = metric_batch[1].item()
-            metric_values_wt.append(metric_wt)
-            metric_et = metric_batch[2].item()
-            metric_values_et.append(metric_et)
+            # metric_wt = metric_batch[1].item() we only have one label (mask) so metric_batch only has one item
+            # metric_values_wt.append(metric_wt)
+            # metric_et = metric_batch[2].item()
+            # metric_values_et.append(metric_et)
             dice_metric.reset()
             dice_metric_batch.reset()
 
@@ -278,10 +278,11 @@ for epoch in range(max_epochs):
                 print("saved new best metric model")
             print(
                 f"current epoch: {epoch + 1} current mean dice: {metric:.4f}"
-                f" tc: {metric_tc:.4f} wt: {metric_wt:.4f} et: {metric_et:.4f}"
+                f" tc: {metric_tc:.4f}"
                 f"\nbest mean dice: {best_metric:.4f}"
                 f" at epoch: {best_metric_epoch}"
             )
+                # wt: {metric_wt:.4f} et: {metric_et:.4f}"
     print(f"time consuming of epoch {epoch + 1} is: {(time.time() - epoch_start):.4f}")
 total_time = time.time() - total_start
 
@@ -454,9 +455,10 @@ with torch.no_grad():
     dice_metric.reset()
     dice_metric_batch.reset()
 
-metric_tc, metric_wt, metric_et = metric_batch[0].item(), metric_batch[1].item(), metric_batch[2].item()
+metric_tc = metric_batch[0].item()#, metric_batch[1].item(), metric_batch[2].item()
+# metric_wt, metric_et
 
 print("Metric on original image spacing: ", metric)
 print(f"metric_tc: {metric_tc:.4f}")
-print(f"metric_wt: {metric_wt:.4f}")
-print(f"metric_et: {metric_et:.4f}")
+# print(f"metric_wt: {metric_wt:.4f}")
+# print(f"metric_et: {metric_et:.4f}")

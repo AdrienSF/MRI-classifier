@@ -86,8 +86,8 @@ class ConvertToMultiChannelBasedOnBratsClassesd(MapTransform):
 val_transform = Compose(
     [
         LoadImaged(keys=["image", "label"]),
-        EnsureChannelFirstd(keys="image"),
-        ConvertToMultiChannelBasedOnBratsClassesd(keys="label"),
+        EnsureChannelFirstd(keys=["image", "label"]),
+        # ConvertToMultiChannelBasedOnBratsClassesd(keys="label"),
         Spacingd(
             keys=["image", "label"],
             pixdim=(1.0, 1.0, 1.0),
@@ -105,4 +105,4 @@ res = val_transform(data_dict)
 
 # print(res[0]['image_meta_dict']['original_channel_dim'])
 # print(res[0]['image_meta_dict'])
-print(res[0]['image'].shape)
+print(res[0]['label'].shape)
