@@ -368,7 +368,7 @@ with torch.no_grad():
     plt.close()
     # visualize the 3 channels label corresponding to this image
     plt.figure("label", (18, 6))
-    for i in range(3):
+    for i in range(1):
         plt.subplot(1, 3, i + 1)
         plt.title(f"label channel {i}")
         plt.imshow(val_ds[0]["label"][i, :, :, 70].detach().cpu())
@@ -379,7 +379,7 @@ with torch.no_grad():
     plt.close()
     # visualize the 3 channels model output corresponding to this image
     plt.figure("output", (18, 6))
-    for i in range(3):
+    for i in range(1):
         plt.subplot(1, 3, i + 1)
         plt.title(f"output channel {i}")
         plt.imshow(val_output[i, :, :, 70].detach().cpu())
